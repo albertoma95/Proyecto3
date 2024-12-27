@@ -1,20 +1,319 @@
-<form method="POST" action="">
-    {% csrf_token %}
-    <label for="precipitation">Precipitación:</label>
-    <input type="text" name="precipitation" id="precipitation" required><br>
-    <label for="temp_max">Temperatura Máxima:</label>
-    <input type="text" name="temp_max" id="temp_max" required><br>
-    <label for="temp_min">Temperatura Mínima:</label>
-    <input type="text" name="temp_min" id="temp_min" required><br>
-    <label for="wind">Viento:</label>
-    <input type="text" name="wind" id="wind" required><br>
-    <label for="humidity">Humedad:</label>
-    <input type="text" name="humidity" id="humidity" required><br>
-    <label for="pressure">Presión:</label>
-    <input type="text" name="pressure" id="pressure" required><br>
-    <label for="solar_radiation">Radiación Solar:</label>
-    <input type="text" name="solar_radiation" id="solar_radiation" required><br>
-    <label for="visibility">Visibilidad:</label>
-    <input type="text" name="visibility" id="visibility" required><br>
-    <button type="submit">Predecir</button>
-</form>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Predicción Meteorológica</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600&display=swap" rel="stylesheet"/>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(-45deg, #4facfe, #00f2fe, #43e97b, #38f9d7);
+      background-size: 400% 400%;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      animation: gradientBG 10s ease infinite;
+    }
+
+    @keyframes gradientBG {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    header {
+      text-align: center;
+      padding: 40px 20px;
+      color: #fff;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    }
+
+    header h1 {
+      font-size: 3em;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    header p {
+      font-size: 1.2em;
+      font-weight: 300;
+    }
+
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .form-section {
+      background-color: rgba(255, 255, 255, 0.9);
+      border-radius: 8px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 500px;
+      margin: 20px;
+      padding: 30px;
+      animation: fadeIn 2s ease 1;
+    }
+
+    .form-section h2 {
+      margin-bottom: 20px;
+      font-weight: 600;
+      color: #333;
+      text-align: center;
+    }
+
+    form label {
+      display: block;
+      margin: 10px 0 5px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    form input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 2px solid #ccc;
+      border-radius: 4px;
+      font-size: 1em;
+      transition: border-color 0.3s ease;
+    }
+
+    form input[type="text"]:focus {
+      border-color: #00c9ff;
+      outline: none;
+    }
+
+    form button[type="submit"] {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      background-color: #00c9ff;
+      color: #fff;
+      font-size: 1em;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+    .prediction-box {
+  margin-top: 20px;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 8px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  padding: 20px;
+  text-align: center;
+  animation: fadeIn 1s ease 1;
+}
+
+.weather-animation {
+  width: 120px;
+  margin: 10px auto;
+  display: block;
+  animation: pulse 2s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0px);
+  }
+}
+
+    form button[type="submit"]:hover {
+      background-color: #00a7d8;
+      transform: translateY(-2px);
+    }
+
+    .cards-section {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: center;
+      width: 100%;
+      max-width: 900px;
+      margin: 20px auto;
+      gap: 20px;
+    }
+
+    .card {
+      background-color: rgba(255, 255, 255, 0.9);
+      border-radius: 8px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      width: 260px;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    .card .icon {
+      font-size: 48px;
+      margin-bottom: 10px;
+      color: #00c9ff;
+    }
+
+    .card h3 {
+      margin-bottom: 10px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .card p {
+      color: #555;
+      font-size: 0.9em;
+      line-height: 1.4em;
+    }
+
+    .prediction-box {
+      margin-top: 20px;
+      background-color: rgba(255, 255, 255, 0.8);
+      border-radius: 8px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      padding: 20px;
+      text-align: center;
+      animation: fadeIn 1s ease 1;
+    }
+
+    .prediction-box h2 {
+      color: #333;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    @keyframes fadeIn {
+      0% {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0px);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .cards-section {
+        flex-direction: column;
+        align-items: center;
+      }
+      .card {
+        width: 80%;
+      }
+    }
+
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Predicción Meteorológica</h1>
+    <p>Conoce el clima antes de salir de casa</p>
+  </header>
+
+  <div class="container">
+    <div class="form-section">
+      <h2>Ingresa los datos</h2>
+      <form method="POST" action="">
+        {% csrf_token %}
+        <label for="precipitation">Precipitación:</label>
+        <input type="text" name="precipitation" id="precipitation" required placeholder="Ej. 12 mm"/>
+
+        <label for="temp_max">Temperatura Máxima:</label>
+        <input type="text" name="temp_max" id="temp_max" required placeholder="Ej. 30 °C"/>
+
+        <label for="temp_min">Temperatura Mínima:</label>
+        <input type="text" name="temp_min" id="temp_min" required placeholder="Ej. 15 °C"/>
+
+        <label for="wind">Viento:</label>
+        <input type="text" name="wind" id="wind" required placeholder="Ej. 15 km/h"/>
+
+        <label for="humidity">Humedad:</label>
+        <input type="text" name="humidity" id="humidity" required placeholder="Ej. 60%"/>
+
+        <label for="pressure">Presión:</label>
+        <input type="text" name="pressure" id="pressure" required placeholder="Ej. 1013 hPa"/>
+
+        <label for="solar_radiation">Radiación Solar:</label>
+        <input type="text" name="solar_radiation" id="solar_radiation" required placeholder="Ej. 700 W/m²"/>
+
+        <label for="visibility">Visibilidad:</label>
+        <input type="text" name="visibility" id="visibility" required placeholder="Ej. 10 km"/>
+
+        <button type="submit">Predecir</button>
+      </form>
+
+{% if prediction %}
+  <div class="prediction-box">
+    <h2>Resultado de la predicción:</h2>
+
+    {% if weather_info %}
+      <h3>{{ weather_info.icon }} {{ weather_info.name }}</h3>
+      <p>{{ weather_info.description }}</p>
+      <img src="{{ weather_info.image }}" alt="{{ weather_info.name }}" class="weather-animation" />
+    {% endif %}
+  </div>
+{% endif %}
+    </div>
+
+    <div class="cards-section">
+      <div class="card">
+        <div class="icon">☂</div>
+        <h3>¿Lloverá hoy?</h3>
+        <p>Descubre las probabilidades de lluvia y no te olvides de llevar tu paraguas.</p>
+      </div>
+      <div class="card">
+        <div class="icon">☀</div>
+        <h3>Días soleados</h3>
+        <p>Conoce los días con mayor radiación solar y aprovecha el mejor clima.</p>
+      </div>
+      <div class="card">
+        <div class="icon">⚡</div>
+        <h3>Advertencias</h3>
+        <p>Mantenemos informados a nuestros usuarios de alertas meteorológicas.</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
