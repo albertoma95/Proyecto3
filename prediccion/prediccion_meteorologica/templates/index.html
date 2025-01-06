@@ -92,6 +92,27 @@
       </h2>
       <form method="POST" action="">
         {% csrf_token %}
+            <label for="date" class="block font-semibold mb-1">
+      Fecha:
+    </label>
+    <input
+      type="date"
+      name="date"
+      id="date"
+      required
+      placeholder="YYYY-MM-DD"
+      class="
+        w-full
+        p-2
+        mb-4
+        border-2
+        border-gray-300
+        rounded
+        focus:outline-none
+        focus:border-cyan-500
+      "
+    />
+
         <label for="precipitation" class="block font-semibold mb-1">
           Precipitación:
         </label>
