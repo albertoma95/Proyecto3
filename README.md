@@ -18,8 +18,9 @@ Weather prediction es una herramienta desarrollada en Django que nos permite, en
 - Tailwind CSS para el diseño de la interfaz.
 
 ## Instalación de paquetes
-
+```bash
 - pip install -r requirements.txt
+```
 
 ## Comandos para Iniciar el Proyecto - Desde la carpeta raíz, es decir, en la carpeta padre de prediccion_meteorologica
 
