@@ -1,0 +1,10 @@
+django
+django-tailwind
+django_browser_reload
+scikit-learn
+seaborn
+pandas
+joblib
+matplotlib
+numpy
+imblearn
