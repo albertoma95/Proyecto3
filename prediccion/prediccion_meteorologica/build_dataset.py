@@ -11,7 +11,7 @@ df_observations['precipitation'].interpolate(method='linear', inplace=True)
 df_observations['temp_max'].interpolate(method='linear', inplace=True)
 df_observations['temp_min'].interpolate(method='linear', inplace=True)
 df_observations['wind'].interpolate(method='linear', inplace=True)
-
+df_observations = df_observations.round(2)
 df_merged = pd.merge(df_observations, df_dates, on='date_id', how='left')
 
 df_merged = pd.merge(df_merged, df_seasons, on='estacion_id', how='left')

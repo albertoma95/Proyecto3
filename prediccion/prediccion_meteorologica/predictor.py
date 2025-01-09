@@ -46,7 +46,7 @@ X_resampled, y_resampled = sm.fit_resample(X_scaled, y)
 # Selección de características con RFE
 rfe = RFE(
     estimator=RandomForestClassifier(random_state=42),
-    n_features_to_select=5
+    n_features_to_select=8
 )
 rfe.fit(X_resampled, y_resampled)
 X_rfe = rfe.transform(X_resampled)
