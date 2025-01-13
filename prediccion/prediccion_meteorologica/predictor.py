@@ -1,7 +1,7 @@
 import pandas as pd
 import joblib
 import numpy as np
-
+import json
 from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split, GridSearchCV
@@ -30,8 +30,7 @@ df['year'] = df['date'].dt.year
 df['month'] = df['date'].dt.month
 df['day'] = df['date'].dt.day
 
-X = df[['precipitation', 'temp_max', 'temp_min', 'wind',
-        'humidity', 'pressure', 'solar_radiation', 'visibility',
+X = df[['precipitation','wind','visibility',
         'year', 'month', 'day']]
 y = df['weather_id']
 
@@ -46,7 +45,7 @@ X_resampled, y_resampled = sm.fit_resample(X_scaled, y)
 # Selección de características con RFE
 rfe = RFE(
     estimator=RandomForestClassifier(random_state=42),
-    n_features_to_select=8
+    n_features_to_select=10
 )
 rfe.fit(X_resampled, y_resampled)
 X_rfe = rfe.transform(X_resampled)
@@ -170,6 +169,30 @@ elif opcion == '2':
     joblib.dump(optimal_model, "prediccion_meteorologica/models/svm_model.pkl")
     joblib.dump(scaler, "prediccion_meteorologica/models/scaler.pkl")
     print("Modelo óptimo entrenado y guardado correctamente.")
+    # Convertir el informe de clasificación a un diccionario
+    classification_report_dict = classification_report(y_test, y_pred, output_dict=True)
+
+    # Guardar el informe de clasificación en JSON
+    with open("prediccion_meteorologica/reports/classification_report.json", "w") as f:
+        json.dump(classification_report_dict, f, indent=4)
+
+    # Guardar la matriz de confusión en JSON
+    confusion_matrix_dict = {
+        "matrix": cm.tolist(),
+        "labels": list(set(y_test))  # Etiquetas únicas
+    }
+    with open("prediccion_meteorologica/reports/confusion_matrix.json", "w") as f:
+        json.dump(confusion_matrix_dict, f, indent=4)
+
+    # Guardar las precisiones en JSON
+    metrics = {
+        "train_accuracy": train_accuracy,
+        "test_accuracy": test_accuracy
+    }
+    with open("prediccion_meteorologica/reports/metrics.json", "w") as f:
+        json.dump(metrics, f, indent=4)
+
+    print("Resultados guardados en archivos JSON.")
 
 else:
     print("Opción no válida. Por favor, seleccione 1 o 2.")

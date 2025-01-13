@@ -1,10 +1,16 @@
-from django.shortcuts import render
-import joblib
 import datetime
+import json
+import joblib
+from django.shortcuts import render
 
 def predict_weather(request):
     prediction = None
     weather_info = None
+
+    # Variables para las métricas (inicialmente vacías)
+    classification_report = {}
+    confusion_matrix = {}
+    metrics = {}
 
     if request.method == 'POST':
         data = request.POST
@@ -22,12 +28,7 @@ def predict_weather(request):
         #    *Nota*: Esto debe concordar con el orden de columnas que usaste al entrenar el modelo
         features = [
             float(data['precipitation']),
-            float(data['temp_max']),
-            float(data['temp_min']),
             float(data['wind']),
-            float(data['humidity']),
-            float(data['pressure']),
-            float(data['solar_radiation']),
             float(data['visibility']),
             year,
             month,
@@ -75,10 +76,33 @@ def predict_weather(request):
                 'icon': "☀"
             }
         }
-
         weather_info = weather_dict.get(prediction, None)
 
-    return render(request, 'index.html', {
+    # Lectura de archivos JSON con las métricas
+    try:
+        with open("prediccion_meteorologica/reports/classification_report.json", "r") as f:
+            classification_report = json.load(f)
+    except Exception as e:
+        classification_report = {"error": "No se pudo cargar el classification report."}
+
+    try:
+        with open("prediccion_meteorologica/reports/confusion_matrix.json", "r") as f:
+            confusion_matrix = json.load(f)
+    except Exception as e:
+        confusion_matrix = {"error": "No se pudo cargar la confusion matrix."}
+
+    try:
+        with open("prediccion_meteorologica/reports/metrics.json", "r") as f:
+            metrics = json.load(f)
+    except Exception as e:
+        metrics = {"error": "No se pudo cargar las métricas."}
+
+    context = {
         'prediction': prediction,
-        'weather_info': weather_info
-    })
+        'weather_info': weather_info,
+        'classification_report': classification_report,
+        'confusion_matrix': confusion_matrix,
+        'metrics': metrics
+    }
+
+    return render(request, 'index.html', context)
