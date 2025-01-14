@@ -1,119 +1,344 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Predicción Meteorológica</title>
+
+    <link rel="preconnect" href="https://fonts.gstatic.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.2/dist/tailwind.min.css" rel="stylesheet"/>
+
     <style>
-        /* Estilos generales */
         body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background: linear-gradient(to bottom, #87CEFA, #ffffff);
-            color: #333;
-            text-align: center;
+            font-family: 'Montserrat', sans-serif;
         }
 
-        /* Encabezado */
-        header {
-            background-color: #4682B4;
-            color: white;
-            padding: 20px 10px;
+        /* Nuevo fondo con gradiente moderno */
+        body {
+            background: linear-gradient(135deg, #6B73FF 0%, #000DFF 100%);
         }
 
-        header h1 {
-            margin: 0;
-            font-size: 2.5em;
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0px);
+            }
         }
 
-        header p {
-            margin: 5px 0;
-            font-size: 1.2em;
+        .animate-fadeIn {
+            animation: fadeIn 1s ease forwards;
         }
 
-        /* Sección principal */
-        .content {
-            padding: 20px;
+        @keyframes pulse-custom {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
         }
 
-        .forecast-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px;
-            margin-top: 20px;
-        }
-
-        .forecast-card {
-            background-color: white;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
-            width: 250px;
-            padding: 15px;
-            text-align: center;
-            transition: transform 0.3s ease;
-        }
-
-        .forecast-card:hover {
-            transform: scale(1.05);
-        }
-
-        .forecast-card h3 {
-            margin: 10px 0;
-            font-size: 1.5em;
-            color: #4682B4;
-        }
-
-        .forecast-card img {
-            width: 80px;
-            margin: 10px 0;
-        }
-
-        .forecast-card p {
-            margin: 5px 0;
-        }
-
-        /* Footer */
-        footer {
-            background-color: #4682B4;
-            color: white;
-            padding: 10px;
-            margin-top: 30px;
-            font-size: 0.9em;
+        .animate-pulse-custom {
+            animation: pulse-custom 2s infinite;
         }
     </style>
 </head>
-<body>
-    <header>
-        <h1>Predicción Meteorológica</h1>
-        <p>Consulta el pronóstico del clima para los próximos días</p>
-    </header>
-    <div class="content">
-        <h2>Pronóstico de la semana</h2>
-        <div class="forecast-container">
-            <div class="forecast-card">
-                <h3>Lunes</h3>
-                <img src="https://via.placeholder.com/80?text=Soleado" alt="Soleado">
-                <p>🌡️ 25°C / 15°C</p>
-                <p>☀️ Soleado</p>
+<body class="min-h-screen from-cyan-400 via-blue-400 to-green-400 text-white flex flex-col">
+<header class="text-center py-10 px-4">
+    <h1 class="text-4xl font-bold mb-2 drop-shadow-md">
+        Predicción Meteorológica
+    </h1>
+    <p class="text-lg font-light">
+        Conoce el clima antes de salir de casa
+    </p>
+</header>
+
+<div class="container mx-auto px-4 pb-10 flex flex-col lg:flex-row gap-8">
+    <aside class="lg:w-1/4 bg-white bg-opacity-90 rounded-lg shadow-lg p-4">
+        <nav class="flex flex-col gap-4">
+            <button
+                    id="tabBtnPrediccion"
+                    class="py-2 px-4 rounded bg-cyan-500 text-white font-semibold hover:bg-cyan-600 focus:outline-none"
+                    onclick="showTab('prediccion')"
+            >
+                Predicción
+            </button>
+            <button
+                    id="tabBtnMetricas"
+                    class="py-2 px-4 rounded bg-gray-300 text-gray-800 font-semibold hover:bg-gray-400 focus:outline-none"
+                    onclick="showTab('metricas')"
+            >
+                Métricas
+            </button>
+        </nav>
+    </aside>
+
+    <main class="lg:w-3/4">
+        <section id="tab-prediccion" class="animate-fadeIn">
+            <div class="flex flex-col lg:flex-row gap-8">
+                <div class="flex-1 bg-white bg-opacity-90 rounded-lg shadow-lg p-6 max-w-md mx-auto lg:mx-0 text-gray-800">
+                    <h2 class="text-2xl font-semibold text-center mb-6">Ingresa los datos</h2>
+                    <form method="POST" action="">
+                        {% csrf_token %}
+                        <label for="date" class="block font-semibold mb-1">Fecha:</label>
+                        <input type="date" name="date" id="date" required placeholder="YYYY-MM-DD"
+                               class="w-full p-2 mb-1 border-2 border-gray-300 rounded focus:outline-none focus:border-cyan-500"/>
+
+                        <label for="precipitation" class="block font-semibold mb-1">Precipitación:</label>
+                        <input type="text" name="precipitation" id="precipitation" required placeholder="Ej. 12 mm"
+                               class="w-full p-2 mb-1 border-2 border-gray-300 rounded focus:outline-none focus:border-cyan-500"/>
+
+
+                        <label for="wind" class="block font-semibold mb-1">Viento:</label>
+                        <input type="text" name="wind" id="wind" required placeholder="Ej. 15 km/h"
+                               class="w-full p-2 mb-1 border-2 border-gray-300 rounded focus:outline-none focus:border-cyan-500"/>
+
+
+                        <label for="visibility" class="block font-semibold mb-1">Visibilidad:</label>
+                        <input type="text" name="visibility" id="visibility" required placeholder="Ej. 10 km"
+                               class="w-full p-2 mb-1 border-2 border-gray-300 rounded focus:outline-none focus:border-cyan-500"/>
+
+                        <button type="submit"
+                                class="w-full py-3 mt-4 bg-cyan-500 text-white font-semibold rounded transition duration-300 transform hover:bg-cyan-600 active:scale-95 tracking-wide">
+                            Predecir
+                        </button>
+                    </form>
+
+                    <script>
+                        document.addEventListener("DOMContentLoaded", function () {
+                            const fields = [
+                                "date", "precipitation", "temp_max", "temp_min", "wind", "humidity", "pressure", "solar_radiation", "visibility"
+                            ];
+                            const button = document.querySelector("button[type='submit']");
+
+                            function validateField(field) {
+                                const input = document.getElementById(field);
+                                let errorDiv = document.getElementById(field + '-error');
+                                if (!errorDiv) {
+                                    errorDiv = document.createElement("div");
+                                    errorDiv.id = field + '-error';
+                                    errorDiv.className = "text-red-500 text-sm mb-2";
+                                    input.parentNode.insertBefore(errorDiv, input.nextSibling);
+                                }
+                                input.classList.remove("border-red-500");
+
+                                if (!input.value.trim()) {
+                                    errorDiv.textContent = "Este campo no puede estar vacío.";
+                                    input.classList.add("border-red-500");
+                                    return false;
+                                }
+                                if (field !== "date" && !/^[0-9.]+$/.test(input.value.trim())) {
+                                    errorDiv.textContent = "Este campo debe contener solo números.";
+                                    input.classList.add("border-red-500");
+                                    return false;
+                                }
+                                errorDiv.textContent = "";
+                                return true;
+                            }
+
+                            function validateAllFields() {
+                                let allValid = true;
+                                fields.forEach(field => {
+                                    if (!validateField(field)) {
+                                        allValid = false;
+                                    }
+                                });
+                                button.style.opacity = allValid ? "1" : "0.5";
+                                button.disabled = !allValid;
+                            }
+
+                            fields.forEach(field => {
+                                const input = document.getElementById(field);
+                                input.addEventListener("input", () => validateAllFields());
+                            });
+                            validateAllFields();
+                        });
+                    </script>
+                </div>
+
+                <div class="flex-1 flex flex-col gap-6">
+                    <div class="flex flex-col gap-6 animate-fadeIn">
+                        <div class="card bg-white bg-opacity-90 text-gray-800 rounded-lg shadow-lg p-6">
+                            <div class="icon text-4xl mb-2 text-cyan-500">☂</div>
+                            <h3 class="text-xl font-semibold mb-2">¿Lloverá hoy?</h3>
+                            <p class="text-sm">
+                                Descubre las probabilidades de lluvia y no te olvides de llevar tu paraguas.
+                            </p>
+                        </div>
+                        <div class="card bg-white bg-opacity-90 text-gray-800 rounded-lg shadow-lg p-6">
+                            <div class="icon text-4xl mb-2 text-yellow-500">☀</div>
+                            <h3 class="text-xl font-semibold mb-2">Días soleados</h3>
+                            <p class="text-sm">
+                                Conoce los días con mayor radiación solar y aprovecha el mejor clima.
+                            </p>
+                        </div>
+                        <div class="card bg-white bg-opacity-90 text-gray-800 rounded-lg shadow-lg p-6">
+                            <div class="icon text-4xl mb-2 text-red-500">⚡</div>
+                            <h3 class="text-xl font-semibold mb-2">Advertencias</h3>
+                            <p class="text-sm">
+                                Mantenemos informados a nuestros usuarios de alertas meteorológicas.
+                            </p>
+                        </div>
+                    </div>
+
+                    {% if prediction %}
+                        <div class="relative bg-gray-900 bg-opacity-70 text-white rounded-lg shadow-lg overflow-hidden animate-fadeIn">
+                            <div class="absolute inset-0 bg-cover bg-center"
+                                 style="background-image: url('{{ weather_info.image }}'); filter: blur(8px); -webkit-filter: blur(8px);">
+                            </div>
+                            <div class="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/50"></div>
+                            <div class="relative z-10 p-6">
+                                <h2 class="text-2xl font-bold">Resultado de la predicción:</h2>
+                                {% if weather_info %}
+                                    <div class="mt-4">
+                                        <h3 class="text-3xl font-extrabold flex items-center justify-center">
+                                            {{ weather_info.icon }} {{ weather_info.name }}
+                                        </h3>
+                                        <p class="text-lg mt-2">{{ weather_info.description }}</p>
+                                        <div class="mt-6 flex justify-center">
+                                            <img src="{{ weather_info.image }}" alt="{{ weather_info.name }}"
+                                                 class="rounded-lg shadow-lg w-64 h-64 object-cover border-4 border-white"/>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
             </div>
-            <div class="forecast-card">
-                <h3>Martes</h3>
-                <img src="https://via.placeholder.com/80?text=Nublado" alt="Nublado">
-                <p>🌡️ 22°C / 14°C</p>
-                <p>☁️ Nublado</p>
-            </div>
-            <div class="forecast-card">
-                <h3>Miércoles</h3>
-                <img src="https://via.placeholder.com/80?text=Lluvia" alt="Lluvia">
-                <p>🌡️ 18°C / 12°C</p>
-                <p>🌧️ Lluvia</p>
-            </div>
-        </div>
+        </section>
+
+        <section id="tab-metricas" class="hidden animate-fadeIn">
+            <div class="bg-white bg-opacity-90 rounded-lg shadow-lg p-6 text-gray-800">
+                <h2 class="text-2xl font-semibold text-center mb-6">Métricas del Modelo</h2>
+                <div class="space-y-6">
+                    <div class="p-4 bg-gray-100 rounded overflow-auto">
+                        <h3 class="font-bold mb-2">Informe de Clasificación</h3>
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50 font-bold">
+                            <tr>
+                                <th scope="col"
+                                    class="px-6 py-3 text-left text-xs font-bold mb-2 uppercase tracking-wider font-bold">
+                                    Clase
+                                </th>
+                                <th scope="col"
+                                    class="px-6 py-3 text-left text-xs font-bold mb-2 uppercase tracking-wider font-bold">
+                                    Precisión
+                                </th>
+                                <th scope="col"
+                                    class="px-6 py-3 text-left text-xs font-bold mb-2  uppercase tracking-wider font-bold">
+                                    Recall
+                                </th>
+                                <th scope="col"
+                                    class="px-6 py-3 text-left text-xs font-bold mb-2 uppercase tracking-wider font-bold">
+                                    F1-Score
+                                </th>
+                                <th scope="col"
+                                    class="px-6 py-3 text-left text-xs font-bold mb-2 uppercase tracking-wider font-bold">
+                                    Soporte
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                            {% for key, metric in classification_report.items %}
+                                {% if key != "accuracy" and key != "macro_avg" and key != "weighted_avg" %}
+                                    <tr>
+                                        <td class="px-6 py-4 font-semibold">{{ key }}</td>
+                                        <td class="px-6 py-4">{{ metric.precision|floatformat:3 }}</td>
+                                        <td class="px-6 py-4">{{ metric.recall|floatformat:3 }}</td>
+                                        <td class="px-6 py-4">{{ metric.f1_score|floatformat:3 }}</td>
+                                        <td class="px-6 py-4">{{ metric.support }}</td>
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="p-4 bg-gray-100 rounded overflow-auto">
+                        <h3 class="font-semibold mb-2">Matriz de Confusión</h3>
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3"></th>
+                                {% for label in confusion_matrix.labels %}
+                                    <th class="px-6 py-3 text-center">{{ label }}</th>
+                                {% endfor %}
+                            </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                            {% for row in confusion_matrix.matrix %}
+                                <tr>
+                                    <td class="px-6 py-4 font-bold">{{ forloop.counter }}</td>
+                                    {% for cell in row %}
+                                        <td class="px-6 py-4 text-center">{{ cell }}</td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+
+                    <div class="p-4 bg-gray-100 rounded overflow-auto">
+                        <h3 class="font-bold mb-2">Métricas Generales</h3>
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <tbody>
+                            <tbody>
+                            <tr class="bg-white">
+                                <td class="px-6 py-4 font-semibold">Train Accuracy</td>
+                                <td class="px-6 py-4">{{ metrics.train_accuracy|floatformat:3 }}%</td>
+                            </tr>
+                            <tr class="bg-gray-50">
+                                <td class="px-6 py-4 font-semibold">Test Accuracy</td>
+                                <td class="px-6 py-4">{{ metrics.test_accuracy|floatformat:3 }}%</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+        </section>
+
+    </main>
+</div>
+
+<script>
+    function showTab(tab) {
+        const prediccionSection = document.getElementById('tab-prediccion');
+        const metricasSection = document.getElementById('tab-metricas');
+        const btnPrediccion = document.getElementById('tabBtnPrediccion');
+        const btnMetricas = document.getElementById('tabBtnMetricas');
+
+        if (tab === 'prediccion') {
+            prediccionSection.classList.remove('hidden');
+            metricasSection.classList.add('hidden');
+            btnPrediccion.classList.replace('bg-gray-300', 'bg-cyan-500');
+            btnPrediccion.classList.replace('text-gray-800', 'text-white');
+            btnMetricas.classList.replace('bg-cyan-500', 'bg-gray-300');
+            btnMetricas.classList.replace('text-white', 'text-gray-800');
+        } else if (tab === 'metricas') {
+            metricasSection.classList.remove('hidden');
+            prediccionSection.classList.add('hidden');
+            btnMetricas.classList.replace('bg-gray-300', 'bg-cyan-500');
+            btnMetricas.classList.replace('text-gray-800', 'text-white');
+            btnPrediccion.classList.replace('bg-cyan-500', 'bg-gray-300');
+            btnPrediccion.classList.replace('text-white', 'text-gray-800');
+        }
+    }
+</script>
+  <footer class="bg-white bg-opacity-90 text-gray-800 py-6 mt-auto">
+    <div class="container mx-auto text-center">
+      <p class="text-sm">&copy; 2025 Predicción Meteorológica. Todos los derechos reservados.</p>
+      <p class="text-xs mt-2">Desarrollado con ❤️ por Tu Empresa.</p>
     </div>
-    <footer>
-        <p>© 2024 Predicción Meteorológica. Todos los derechos reservados.</p>
-    </footer>
+  </footer>
 </body>
+
 </html>
