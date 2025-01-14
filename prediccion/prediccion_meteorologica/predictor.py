@@ -1,6 +1,7 @@
 import pandas as pd
 import joblib
 import numpy as np
+from sklearn.feature_selection import chi2
 import json
 from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier
@@ -30,8 +31,7 @@ df['year'] = df['date'].dt.year
 df['month'] = df['date'].dt.month
 df['day'] = df['date'].dt.day
 
-X = df[['precipitation','wind','visibility',
-        'year', 'month', 'day']]
+X = df[['precipitation','wind','visibility','day','month','year']]
 y = df['weather_id']
 
 # Escalado
@@ -165,7 +165,22 @@ elif opcion == '2':
     cm = confusion_matrix(y_test, y_pred)
     print("Matriz de confusión (modelo óptimo):\n", cm)
 
-    # Guardamos el modelo óptimo
+    X_non_negative = X_scaled - X_scaled.min(axis=0)
+
+    # Validar si todos los valores son no negativos
+    if (X_non_negative < 0).any():
+        raise ValueError("Los datos no son no negativos después de la transformación.")
+
+    # Calcular los puntajes de Chi-cuadrado
+    chi2_scores, p_values = chi2(X_non_negative, y)
+
+    # Crear un diccionario con los resultados
+    chi2_results = {feature: score for feature, score in zip(X.columns, chi2_scores)}
+
+    print("\nPesos de las variables utilizando Chi-cuadrado:")
+    for feature, score in chi2_results.items():
+        print(f"{feature}: {score:.4f}")
+
     joblib.dump(optimal_model, "prediccion_meteorologica/models/svm_model.pkl")
     joblib.dump(scaler, "prediccion_meteorologica/models/scaler.pkl")
     print("Modelo óptimo entrenado y guardado correctamente.")
