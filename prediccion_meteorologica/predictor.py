@@ -1,7 +1,8 @@
 import pandas as pd
 import joblib
 import numpy as np
-
+from sklearn.feature_selection import chi2
+import json
 from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split, GridSearchCV
@@ -30,9 +31,7 @@ df['year'] = df['date'].dt.year
 df['month'] = df['date'].dt.month
 df['day'] = df['date'].dt.day
 
-X = df[['precipitation', 'temp_max', 'temp_min', 'wind',
-        'humidity', 'pressure', 'solar_radiation', 'visibility',
-        'year', 'month', 'day']]
+X = df[['precipitation','wind','visibility','day','month','year']]
 y = df['weather_id']
 
 # Escalado
@@ -46,7 +45,7 @@ X_resampled, y_resampled = sm.fit_resample(X_scaled, y)
 # Selección de características con RFE
 rfe = RFE(
     estimator=RandomForestClassifier(random_state=42),
-    n_features_to_select=8
+    n_features_to_select=10
 )
 rfe.fit(X_resampled, y_resampled)
 X_rfe = rfe.transform(X_resampled)
@@ -166,10 +165,49 @@ elif opcion == '2':
     cm = confusion_matrix(y_test, y_pred)
     print("Matriz de confusión (modelo óptimo):\n", cm)
 
-    # Guardamos el modelo óptimo
+    X_non_negative = X_scaled - X_scaled.min(axis=0)
+
+    # Validar si todos los valores son no negativos
+    if (X_non_negative < 0).any():
+        raise ValueError("Los datos no son no negativos después de la transformación.")
+
+    # Calcular los puntajes de Chi-cuadrado
+    chi2_scores, p_values = chi2(X_non_negative, y)
+
+    # Crear un diccionario con los resultados
+    chi2_results = {feature: score for feature, score in zip(X.columns, chi2_scores)}
+
+    print("\nPesos de las variables utilizando Chi-cuadrado:")
+    for feature, score in chi2_results.items():
+        print(f"{feature}: {score:.4f}")
+
     joblib.dump(optimal_model, "prediccion_meteorologica/models/svm_model.pkl")
     joblib.dump(scaler, "prediccion_meteorologica/models/scaler.pkl")
     print("Modelo óptimo entrenado y guardado correctamente.")
+    # Convertir el informe de clasificación a un diccionario
+    classification_report_dict = classification_report(y_test, y_pred, output_dict=True)
+
+    # Guardar el informe de clasificación en JSON
+    with open("prediccion_meteorologica/reports/classification_report.json", "w") as f:
+        json.dump(classification_report_dict, f, indent=4)
+
+    # Guardar la matriz de confusión en JSON
+    confusion_matrix_dict = {
+        "matrix": cm.tolist(),
+        "labels": list(set(y_test))  # Etiquetas únicas
+    }
+    with open("prediccion_meteorologica/reports/confusion_matrix.json", "w") as f:
+        json.dump(confusion_matrix_dict, f, indent=4)
+
+    # Guardar las precisiones en JSON
+    metrics = {
+        "train_accuracy": train_accuracy,
+        "test_accuracy": test_accuracy
+    }
+    with open("prediccion_meteorologica/reports/metrics.json", "w") as f:
+        json.dump(metrics, f, indent=4)
+
+    print("Resultados guardados en archivos JSON.")
 
 else:
     print("Opción no válida. Por favor, seleccione 1 o 2.")
