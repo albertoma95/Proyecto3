@@ -106,7 +106,17 @@
                                class="w-full p-2 mb-1 border-2 border-gray-300 rounded focus:outline-none focus:border-cyan-500"/>
 
                         <button type="submit"
-                                class="w-full py-3 mt-4 bg-cyan-500 text-white font-semibold rounded transition duration-300 transform hover:bg-cyan-600 active:scale-95 tracking-wide">
+                                class="w-full py-3 mt-4 bg-cyan-500 text-white font-semibold rounded transition duration-300 transform hover:bg-cyan-600 active:scale-95 tracking-wide"
+                                onclick="Swal.fire({
+                                    toast: true,
+                                    icon: 'info',
+                                    title: 'Loading...',
+                                    position: 'top-end',
+                                    showConfirmButton: false,
+                                    timer: 5000,
+                                    timerProgressBar: true,
+                                    customClass: { popup: 'naranja-toast' }
+                                })">
                             Predecir
                         </button>
                     </form>
