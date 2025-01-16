@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com"/>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600&display=swap" rel="stylesheet"/>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.2/dist/tailwind.min.css" rel="stylesheet"/>
 
     <style>
@@ -186,29 +187,67 @@
                             </p>
                         </div>
                     </div>
-
                     {% if prediction %}
-                        <div class="relative bg-gray-900 bg-opacity-70 text-white rounded-lg shadow-lg overflow-hidden animate-fadeIn">
-                            <div class="absolute inset-0 bg-cover bg-center"
-                                 style="background-image: url('{{ weather_info.image }}'); filter: blur(8px); -webkit-filter: blur(8px);">
-                            </div>
-                            <div class="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/50"></div>
-                            <div class="relative z-10 p-6">
-                                <h2 class="text-2xl font-bold">Resultado de la predicción:</h2>
                                 {% if weather_info %}
-                                    <div class="mt-4">
-                                        <h3 class="text-3xl font-extrabold flex items-center justify-center">
-                                            {{ weather_info.icon }} {{ weather_info.name }}
-                                        </h3>
-                                        <p class="text-lg mt-2">{{ weather_info.description }}</p>
-                                        <div class="mt-6 flex justify-center">
-                                            <img src="{{ weather_info.image }}" alt="{{ weather_info.name }}"
-                                                 class="rounded-lg shadow-lg w-64 h-64 object-cover border-4 border-white"/>
-                                        </div>
-                                    </div>
+                                        <p class="text-lg mt-2" id="pred_name" style="display: none;">{{ weather_info.icon }} {{ weather_info.name }}</p>
+                                        <p class="text-lg mt-2" id="pred_desc" style="display: none;">{{ weather_info.description }}</p>
+                                        <p class="text-lg mt-2" id="pred_img" style="display: none;">{{ weather_info.image }}</p>
+                                        <script>
+                                            // Extraer valores del DOM usando JavaScript
+                                        document.addEventListener("DOMContentLoaded", function () {
+                                            // Extraer el nombre del clima
+                                            const predName = document.getElementById("pred_name").textContent;
+                                    
+                                            // Extraer la descripción del clima
+                                            const predDesc = document.getElementById("pred_desc").textContent;
+                                    
+                                            // Extraer la URL de la imagen
+                                            const predImg = document.getElementById("pred_img").textContent;
+                                    
+                                            Swal.fire({
+                                            title: '',
+                                            html: `
+                                                <div class="relative bg-gray-800 text-white rounded-xl shadow-xl overflow-hidden animate-fadeIn">
+                                                <!-- Fondo GIF -->
+                                                <div class="absolute inset-0 bg-cover bg-center"
+                                                    style="
+                                                    background-image: url('${predImg}');
+                                                    filter: blur(10px) brightness(0.7);
+                                                    width: 100%;
+                                                    height: 100%;
+                                                    ">
+                                                </div>
+
+                                                <!-- Gradiente -->
+                                                <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/30 to-black/70"></div>
+
+                                                <!-- Contenido -->
+                                                <div class="relative z-10 p-8 text-center">
+                                                    <h2 class="text-3xl font-extrabold mb-4" style="color: #4ADE80;">${predName}</h2>
+                                                    <p class="text-lg italic mb-6" style="color: #FCD34D;">${predDesc}</p>
+                                                    <div class="flex justify-center">
+                                                    <img src="${predImg}" alt="${predName}"
+                                                    class="rounded-lg shadow-lg w-64 h-64 object-cover border-4 border-white transition-transform duration-300 hover:scale-105"/>
+                                                    </div>
+                                                </div>
+                                                </div>
+                                            `,
+                                            width: '70%',
+                                            customClass: {
+                                                popup: 'rounded-xl', // Clase para bordes redondeados
+                                            },
+                                            allowOutsideClick: true,
+                                            confirmButtonText: '<span style="color: white; font-size: 1rem;">✔ Aceptar</span>',
+                                            buttonsStyling: false,
+                                            customClass: {
+                                                confirmButton: 'bg-cyan-500 text-white font-bold py-2 px-4 rounded hover:bg-cyan-600 focus:outline-none',
+                                            },
+                                            background: 'transparent', // Fondo transparente
+                                            showCloseButton: false,
+                                            });
+                                    });
+                                    </script>
                                 {% endif %}
-                            </div>
-                        </div>
                     {% endif %}
                 </div>
             </div>
