@@ -31,7 +31,7 @@ df['year'] = df['date'].dt.year
 df['month'] = df['date'].dt.month
 df['day'] = df['date'].dt.day
 
-X = df[['precipitation','wind','visibility','day','month','year']]
+X = df[['precipitation','wind','visibility','humidity']]
 y = df['weather_id']
 
 # Escalado

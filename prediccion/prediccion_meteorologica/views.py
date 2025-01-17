@@ -15,14 +15,6 @@ def predict_weather(request):
     if request.method == 'POST':
         data = request.POST
 
-        # 1. Extraer la fecha del formulario
-        date_str = data.get('date')  # Asegúrate que en el formulario el input tenga name="date"
-        date_obj = datetime.datetime.strptime(date_str, '%Y-%m-%d')
-
-        # 2. Extraer year, month, day
-        year = date_obj.year
-        month = date_obj.month
-        day = date_obj.day
 
         # 3. Construir el vector de características
         #    *Nota*: Esto debe concordar con el orden de columnas que usaste al entrenar el modelo
@@ -30,10 +22,9 @@ def predict_weather(request):
             float(data['precipitation']),
             float(data['wind']),
             float(data['visibility']),
-            year,
-            month,
-            day
+            float(data['humidity']),
         ]
+        print(features)
 
         # 4. Cargar modelo y scaler
         model = joblib.load("prediccion_meteorologica/models/svm_model.pkl")
@@ -42,6 +33,7 @@ def predict_weather(request):
         # 5. Escalar las características y predecir
         features_scaled = scaler.transform([features])
         prediction = int(model.predict(features_scaled)[0])
+        print(prediction)
 
         # 6. Diccionario para obtener la descripción del clima según la predicción
         weather_dict = {
