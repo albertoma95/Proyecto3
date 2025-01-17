@@ -100,10 +100,10 @@
                         <label for="visibility" class="block font-semibold mb-1">Visibilidad:</label>
                         <input type="text" name="visibility" id="visibility" required placeholder="Ej. 10 km"
                                class="w-full p-2 mb-1 border-2 border-gray-300 rounded focus:outline-none focus:border-cyan-500"/>
-                               
+
                         <label for="humidity" class="block font-semibold mb-1">Humedad:</label>
-                       <input type="text" name="humidity" id="humidity" required placeholder="Ej. 12 mm"
-                              class="w-full p-2 mb-1 border-2 border-gray-300 rounded focus:outline-none focus:border-cyan-500"/>
+                        <input type="text" name="humidity" id="humidity" required placeholder="Ej. 12 mm"
+                               class="w-full p-2 mb-1 border-2 border-gray-300 rounded focus:outline-none focus:border-cyan-500"/>
 
                         <button type="submit"
                                 class="w-full py-3 mt-4 bg-cyan-500 text-white font-semibold rounded transition duration-300 transform hover:bg-cyan-600 active:scale-95 tracking-wide"
@@ -124,7 +124,10 @@
                     <script>
                         document.addEventListener("DOMContentLoaded", function () {
                             const fields = [
-                                "date", "precipitation", "wind", "visibility"
+                                "precipitation",
+                                "wind",
+                                "visibility",
+                                "humidity"
                             ];
                             const button = document.querySelector("button[type='submit']");
 
@@ -137,19 +140,32 @@
                                     errorDiv.className = "text-red-500 text-sm mb-2";
                                     input.parentNode.insertBefore(errorDiv, input.nextSibling);
                                 }
+                                // Quita estilos de error previos
                                 input.classList.remove("border-red-500");
+                                errorDiv.textContent = "";
 
+                                // 1. Verificar que el campo no esté vacío
                                 if (!input.value.trim()) {
                                     errorDiv.textContent = "Este campo no puede estar vacío.";
                                     input.classList.add("border-red-500");
                                     return false;
                                 }
-                                if (field !== "date" && !/^[0-9.]+$/.test(input.value.trim())) {
-                                    errorDiv.textContent = "Este campo debe contener solo números.";
+
+                                // 2. Verificar si el usuario ha ingresado una coma
+                                if (input.value.includes(',')) {
+                                    errorDiv.textContent = "Solo se permiten puntos (.) para decimales, no comas (,).";
                                     input.classList.add("border-red-500");
                                     return false;
                                 }
-                                errorDiv.textContent = "";
+
+                                // 3. Verificar que solo contenga números y puntos (.)
+                                const regex = /^[0-9.]+$/;
+                                if (!regex.test(input.value.trim())) {
+                                    errorDiv.textContent = "Solo se permiten números y puntos (.) en este campo.";
+                                    input.classList.add("border-red-500");
+                                    return false;
+                                }
+
                                 return true;
                             }
 
@@ -160,17 +176,22 @@
                                         allValid = false;
                                     }
                                 });
+                                // Habilitar o deshabilitar el botón de envío
                                 button.style.opacity = allValid ? "1" : "0.5";
                                 button.disabled = !allValid;
                             }
 
+                            // Añadimos el listener a cada campo
                             fields.forEach(field => {
                                 const input = document.getElementById(field);
                                 input.addEventListener("input", () => validateAllFields());
                             });
+
+                            // Validación inicial
                             validateAllFields();
                         });
                     </script>
+
                 </div>
 
                 <div class="flex-1 flex flex-col gap-6">
@@ -198,25 +219,27 @@
                         </div>
                     </div>
                     {% if prediction %}
-                                {% if weather_info %}
-                                        <p class="text-lg mt-2" id="pred_name" style="display: none;">{{ weather_info.icon }} {{ weather_info.name }}</p>
-                                        <p class="text-lg mt-2" id="pred_desc" style="display: none;">{{ weather_info.description }}</p>
-                                        <p class="text-lg mt-2" id="pred_img" style="display: none;">{{ weather_info.image }}</p>
-                                        <script>
-                                            // Extraer valores del DOM usando JavaScript
-                                        document.addEventListener("DOMContentLoaded", function () {
-                                            // Extraer el nombre del clima
-                                            const predName = document.getElementById("pred_name").textContent;
-                                    
-                                            // Extraer la descripción del clima
-                                            const predDesc = document.getElementById("pred_desc").textContent;
-                                    
-                                            // Extraer la URL de la imagen
-                                            const predImg = document.getElementById("pred_img").textContent;
-                                    
-                                            Swal.fire({
-                                            title: '',
-                                            html: `
+                        {% if weather_info %}
+                            <p class="text-lg mt-2" id="pred_name"
+                               style="display: none;">{{ weather_info.icon }} {{ weather_info.name }}</p>
+                            <p class="text-lg mt-2" id="pred_desc"
+                               style="display: none;">{{ weather_info.description }}</p>
+                            <p class="text-lg mt-2" id="pred_img" style="display: none;">{{ weather_info.image }}</p>
+                            <script>
+                                // Extraer valores del DOM usando JavaScript
+                                document.addEventListener("DOMContentLoaded", function () {
+                                    // Extraer el nombre del clima
+                                    const predName = document.getElementById("pred_name").textContent;
+
+                                    // Extraer la descripción del clima
+                                    const predDesc = document.getElementById("pred_desc").textContent;
+
+                                    // Extraer la URL de la imagen
+                                    const predImg = document.getElementById("pred_img").textContent;
+
+                                    Swal.fire({
+                                        title: '',
+                                        html: `
                                                 <div class="relative bg-gray-800 text-white rounded-xl shadow-xl overflow-hidden animate-fadeIn">
                                                 <!-- Fondo GIF -->
                                                 <div class="absolute inset-0 bg-cover bg-center"
@@ -242,22 +265,22 @@
                                                 </div>
                                                 </div>
                                             `,
-                                            width: '70%',
-                                            customClass: {
-                                                popup: 'rounded-xl', // Clase para bordes redondeados
-                                            },
-                                            allowOutsideClick: true,
-                                            confirmButtonText: '<span style="color: white; font-size: 1rem;">✔ Aceptar</span>',
-                                            buttonsStyling: false,
-                                            customClass: {
-                                                confirmButton: 'bg-cyan-500 text-white font-bold py-2 px-4 rounded hover:bg-cyan-600 focus:outline-none',
-                                            },
-                                            background: 'transparent', // Fondo transparente
-                                            showCloseButton: false,
-                                            });
+                                        width: '70%',
+                                        customClass: {
+                                            popup: 'rounded-xl', // Clase para bordes redondeados
+                                        },
+                                        allowOutsideClick: true,
+                                        confirmButtonText: '<span style="color: white; font-size: 1rem;">✔ Aceptar</span>',
+                                        buttonsStyling: false,
+                                        customClass: {
+                                            confirmButton: 'bg-cyan-500 text-white font-bold py-2 px-4 rounded hover:bg-cyan-600 focus:outline-none',
+                                        },
+                                        background: 'transparent', // Fondo transparente
+                                        showCloseButton: false,
                                     });
-                                    </script>
-                                {% endif %}
+                                });
+                            </script>
+                        {% endif %}
                     {% endif %}
                 </div>
             </div>
@@ -382,12 +405,12 @@
         }
     }
 </script>
-  <footer class="bg-white bg-opacity-90 text-gray-800 py-6 mt-auto">
+<footer class="bg-white bg-opacity-90 text-gray-800 py-6 mt-auto">
     <div class="container mx-auto text-center">
-      <p class="text-sm">&copy; 2025 Predicción Meteorológica. Todos los derechos reservados.</p>
-      <p class="text-xs mt-2">Desarrollado con ❤️ por Tu Empresa.</p>
+        <p class="text-sm">&copy; 2025 Predicción Meteorológica. Todos los derechos reservados.</p>
+        <p class="text-xs mt-2">Desarrollado con ❤️ por Tu Empresa.</p>
     </div>
-  </footer>
+</footer>
 </body>
 
 </html>
