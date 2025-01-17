@@ -26,12 +26,8 @@ opcion = input("Ingrese 1 o 2: ")
 df = pd.read_csv("prediccion_meteorologica/data/final_dataset.csv")
 
 # Procesamiento de fechas
-df['date'] = pd.to_datetime(df['date'])
-df['year'] = df['date'].dt.year
-df['month'] = df['date'].dt.month
-df['day'] = df['date'].dt.day
 
-X = df[['precipitation','wind','visibility','day','month','year']]
+X = df[['precipitation','wind','visibility','humidity']]
 y = df['weather_id']
 
 # Escalado

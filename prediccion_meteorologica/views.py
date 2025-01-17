@@ -16,13 +16,6 @@ def predict_weather(request):
         data = request.POST
 
         # 1. Extraer la fecha del formulario
-        date_str = data.get('date')  # Asegúrate que en el formulario el input tenga name="date"
-        date_obj = datetime.datetime.strptime(date_str, '%Y-%m-%d')
-
-        # 2. Extraer year, month, day
-        year = date_obj.year
-        month = date_obj.month
-        day = date_obj.day
 
         # 3. Construir el vector de características
         #    *Nota*: Esto debe concordar con el orden de columnas que usaste al entrenar el modelo
@@ -30,9 +23,8 @@ def predict_weather(request):
             float(data['precipitation']),
             float(data['wind']),
             float(data['visibility']),
-            year,
-            month,
-            day
+            float(data['humidity']),
+
         ]
 
         # 4. Cargar modelo y scaler

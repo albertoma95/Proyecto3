@@ -86,10 +86,6 @@
                     <h2 class="text-2xl font-semibold text-center mb-6">Ingresa los datos</h2>
                     <form method="POST" action="">
                         {% csrf_token %}
-                        <label for="date" class="block font-semibold mb-1">Fecha:</label>
-                        <input type="date" name="date" id="date" required placeholder="YYYY-MM-DD"
-                               class="w-full p-2 mb-1 border-2 border-gray-300 rounded focus:outline-none focus:border-cyan-500"/>
-
                         <label for="precipitation" class="block font-semibold mb-1">Precipitación:</label>
                         <input type="text" name="precipitation" id="precipitation" required placeholder="Ej. 12 mm"
                                class="w-full p-2 mb-1 border-2 border-gray-300 rounded focus:outline-none focus:border-cyan-500"/>
@@ -103,6 +99,10 @@
                         <label for="visibility" class="block font-semibold mb-1">Visibilidad:</label>
                         <input type="text" name="visibility" id="visibility" required placeholder="Ej. 10 km"
                                class="w-full p-2 mb-1 border-2 border-gray-300 rounded focus:outline-none focus:border-cyan-500"/>
+                               
+                        <label for="humidity" class="block font-semibold mb-1">Humedad:</label>
+                       <input type="text" name="humidity" id="humidity" required placeholder="Ej. 12 mm"
+                              class="w-full p-2 mb-1 border-2 border-gray-300 rounded focus:outline-none focus:border-cyan-500"/>
 
                         <button type="submit"
                                 class="w-full py-3 mt-4 bg-cyan-500 text-white font-semibold rounded transition duration-300 transform hover:bg-cyan-600 active:scale-95 tracking-wide">
