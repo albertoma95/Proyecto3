@@ -77,6 +77,13 @@
             >
                 Métricas
             </button>
+    <button
+        id="tabBtnAnalisis"
+        class="py-2 px-4 rounded bg-gray-300 text-gray-800 font-semibold hover:bg-gray-400 focus:outline-none"
+        onclick="showTab('analisis')"
+    >
+        Análisis de datos
+    </button>
         </nav>
     </aside>
 
@@ -377,33 +384,61 @@
 
                 </div>
         </section>
+    <section id="tab-analisis" class="hidden animate-fadeIn">
+    <div class="bg-white bg-opacity-90 rounded-lg shadow-lg p-6 text-gray-800">
+        <h2 class="text-2xl font-semibold text-center mb-6">Análisis de Datos</h2>
+        <div class="relative overflow-hidden" style="padding-top: 56.25%;">
+            <iframe
+                src="https://app.powerbi.com/reportEmbed?reportId=0ead51e3-4d24-4e7c-8b7d-3dac1353f2da&autoAuth=true&ctid=b597eb56-0622-442c-833d-8daf3dcaf56d"
+                frameborder="0"
+                allowFullScreen="true"
+                class="absolute top-0 left-0 w-full h-full border-2 border-gray-300 rounded">
+            </iframe>
+        </div>
+    </div>
+</section>
 
     </main>
 </div>
 
 <script>
-    function showTab(tab) {
-        const prediccionSection = document.getElementById('tab-prediccion');
-        const metricasSection = document.getElementById('tab-metricas');
-        const btnPrediccion = document.getElementById('tabBtnPrediccion');
-        const btnMetricas = document.getElementById('tabBtnMetricas');
+function showTab(tab) {
+    const prediccionSection = document.getElementById('tab-prediccion');
+    const metricasSection = document.getElementById('tab-metricas');
+    const analisisSection = document.getElementById('tab-analisis');
+    const btnPrediccion = document.getElementById('tabBtnPrediccion');
+    const btnMetricas = document.getElementById('tabBtnMetricas');
+    const btnAnalisis = document.getElementById('tabBtnAnalisis');
 
-        if (tab === 'prediccion') {
-            prediccionSection.classList.remove('hidden');
-            metricasSection.classList.add('hidden');
-            btnPrediccion.classList.replace('bg-gray-300', 'bg-cyan-500');
-            btnPrediccion.classList.replace('text-gray-800', 'text-white');
-            btnMetricas.classList.replace('bg-cyan-500', 'bg-gray-300');
-            btnMetricas.classList.replace('text-white', 'text-gray-800');
-        } else if (tab === 'metricas') {
-            metricasSection.classList.remove('hidden');
-            prediccionSection.classList.add('hidden');
-            btnMetricas.classList.replace('bg-gray-300', 'bg-cyan-500');
-            btnMetricas.classList.replace('text-gray-800', 'text-white');
-            btnPrediccion.classList.replace('bg-cyan-500', 'bg-gray-300');
-            btnPrediccion.classList.replace('text-white', 'text-gray-800');
-        }
+    // Ocultar todas las secciones
+    prediccionSection.classList.add('hidden');
+    metricasSection.classList.add('hidden');
+    analisisSection.classList.add('hidden');
+
+    // Restablecer estilos de botones
+    btnPrediccion.classList.replace('bg-cyan-500', 'bg-gray-300');
+    btnPrediccion.classList.replace('text-white', 'text-gray-800');
+    btnMetricas.classList.replace('bg-cyan-500', 'bg-gray-300');
+    btnMetricas.classList.replace('text-white', 'text-gray-800');
+    btnAnalisis.classList.replace('bg-cyan-500', 'bg-gray-300');
+    btnAnalisis.classList.replace('text-white', 'text-gray-800');
+
+    // Mostrar la sección seleccionada y actualizar el botón correspondiente
+    if (tab === 'prediccion') {
+        prediccionSection.classList.remove('hidden');
+        btnPrediccion.classList.replace('bg-gray-300', 'bg-cyan-500');
+        btnPrediccion.classList.replace('text-gray-800', 'text-white');
+    } else if (tab === 'metricas') {
+        metricasSection.classList.remove('hidden');
+        btnMetricas.classList.replace('bg-gray-300', 'bg-cyan-500');
+        btnMetricas.classList.replace('text-gray-800', 'text-white');
+    } else if (tab === 'analisis') {
+        analisisSection.classList.remove('hidden');
+        btnAnalisis.classList.replace('bg-gray-300', 'bg-cyan-500');
+        btnAnalisis.classList.replace('text-gray-800', 'text-white');
     }
+}
+
 </script>
 <footer class="bg-white bg-opacity-90 text-gray-800 py-6 mt-auto">
     <div class="container mx-auto text-center">
