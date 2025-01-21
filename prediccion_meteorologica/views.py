@@ -58,7 +58,7 @@ def predict_weather(request):
             4: {
                 'name': "Niebla",
                 'description': "Visibilidad reducida por la niebla.",
-                'image': "https://media.giphy.com/media/W0sgn9xy8Mul3ab0mG/giphy.gif",
+                'image': "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExYmwxaDYwZ2JnZnFweGR4em43eXBvc2g1OWFoN3dubTJqNnUzeWlwMSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/IcF46X839w60U/giphy.gif",
                 'icon': "🌫"
             },
             5: {
