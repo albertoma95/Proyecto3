@@ -2,14 +2,13 @@
 
 ## Descripción del Proyecto
 
-Weather prediction es una herramienta desarrollada en Django que nos permite, en base a ciertas variables, predecir el clima que hace
+Weather prediction es una herramienta desarrollada en Django que nos permite, en base a ciertas variables, predice el clima actual.
 
 ## Características Principales
 
--
--
--
--
+- Limpieza de datos para generar un mejor dataset.
+- Uso de Random Forest para saber el valor de ciertas variables en neustro modelo.
+- Creación y entrenamiento de un modelo SVM. 
 
 ## Requisitos del Sistema
 
